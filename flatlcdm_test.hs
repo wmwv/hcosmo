@@ -30,4 +30,5 @@ testRunner'' = mapM_ (testRun'' tol) testTableFlatLCDM
             ("LookbackTimeEdS", lookbacktime, 1.0, 70.0, 0.5, 4.24332906),
             ("Age", age, 0.3, 70.0, 0.5, 8.42634602),
             ("AgeEdS", age, 1.0, 70.0, 0.5, 5.06897781),
+            ("ComovingTransverseDistance", comovingTransverseDistance, 0.3, 70, 0.5, 1888.62539593)
             ]
