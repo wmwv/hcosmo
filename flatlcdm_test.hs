@@ -26,6 +26,8 @@ testRun'' tol (name, func, om0, h0, z, expected) = testFunction name func om0 h0
 testRunner'' = mapM_ (testRun'' tol) testTableFlatLCDM
     where tol = 1e-6
           testTableFlatLCDM = [
+            ("LookbackTime", lookbacktime, 0.3, 70.0, 0.5, 5.04063793),
+            ("LookbackTimeEdS", lookbacktime, 1.0, 70.0, 0.5, 4.24332906),
             ("Age", age, 0.3, 70.0, 0.5, 8.42634602),
-            ("AgeEdS", age, 1.0, 70.0, 0.5, 5.06897781)
+            ("AgeEdS", age, 1.0, 70.0, 0.5, 5.06897781),
             ]
