@@ -1,0 +1,11 @@
+module FlatLCDM
+( age ) where
+
+hubbleTime :: Double -> Double
+hubbleTime h0 = (1/h0) * kmPerMpc / secPerGyr
+    where
+        secPerGyr = 1e9 * 365.25 * 24 * 3600
+        kmPerMpc = 3.08567758149137e19
+
+age :: Double -> Double -> Double -> Double
+age z om0 h0 = hubbleTime h0 * 2/3 / sqrt(1-om0) * asinh(sqrt((1/om0 -1)/(1+z)**3))
