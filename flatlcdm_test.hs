@@ -17,4 +17,7 @@ testAge'' tol (om0, h0, z, expected) = testAge om0 h0 z expected tol
 testAgeRunner = testAge 0.3 70.0 0.5 8.42634602 1e-6
 testAgeRunner' = mapM_ (testAge'' tol) testTableFlatLCDM
     where tol = 1e-6
-          testTableFlatLCDM = [(0.3, 70.0, 0.5, 8.42634602)]
+          testTableFlatLCDM = [
+            (0.3, 70.0, 0.5, 8.42634602),
+            (1.0, 70.0, 0.5, 5.06897781)
+            ]
