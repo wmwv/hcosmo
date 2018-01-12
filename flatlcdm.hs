@@ -11,6 +11,10 @@ module FlatLCDM
 
 import Numeric.GSL.Special (ellint_RF, Precision(..))
 
+hubbleDistance :: Double -> Double
+hubbleDistance h0 = c/h0  -- Mpc
+    where c = 299792.458  -- km/s
+
 hubbleTime :: Double -> Double
 hubbleTime h0 = (1/h0) * kmPerMpc / secPerGyr
     where
@@ -51,8 +55,7 @@ comovingDistanceZ1Z2 = comovingDistanceZ1Z2Elliptic
 comovingDistanceZ1Z2Elliptic :: Double -> Double -> Double -> Double -> Double
 comovingDistanceZ1Z2Elliptic om0 h0 z1 z2 =
     prefactor * (tElliptic (s / (1+z1)) - tElliptic (s/(1+z2)))
-    where prefactor = (c / h0) * (1/sqrt(s*om0))
-          c = 299792.458  -- km/s
+    where prefactor = hubbleDistance h0 * (1/sqrt(s*om0))
           s = ((1-om0)/om0)**(1/3)
 
  -- tElliptic uses elliptic integral of the first kind in Carlson form
