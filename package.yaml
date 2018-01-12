@@ -21,6 +21,11 @@ description:         Please see the README on Github at <https://github.com/wmwv
 
 dependencies:
 - base >= 4.7 && < 5
+- hmatrix
+- hmatrix-gsl
+- hmatrix-special
+- HUnit
+- HUnit-approx
 
 library:
   source-dirs: src
