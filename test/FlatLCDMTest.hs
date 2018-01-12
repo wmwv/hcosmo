@@ -1,3 +1,5 @@
+module FlatLCDMTest where
+
 import Test.HUnit.Approx (assertApproxEqual)
 import FlatLCDM
 import Text.Printf
