@@ -10,6 +10,7 @@ module FlatLCDM
 ) where
 
 import Numeric.GSL.Special (ellint_RF, Precision(..))
+import Numeric.GSL.Integration
 
 hubbleDistance :: Double -> Double
 hubbleDistance h0 = c/h0  -- Mpc
@@ -49,8 +50,26 @@ comovingTransverseDistance om0 h0 z = comovingTransverseDistanceZ1Z2 om0 h0 0 z
 comovingTransverseDistanceZ1Z2 :: Double -> Double -> Double -> Double -> Double
 comovingTransverseDistanceZ1Z2 = comovingDistanceZ1Z2
 
+comovingDistanceEdSZ1Z2 :: Double -> Double -> Double -> Double
+comovingDistanceEdSZ1Z2 h0 z1 z2 =
+    2 * hubbleDistance h0 * (1/sqrt(1+z1) - 1/sqrt(1+z2))
+
 comovingDistanceZ1Z2 :: Double -> Double -> Double -> Double -> Double
-comovingDistanceZ1Z2 = comovingDistanceZ1Z2Elliptic
+comovingDistanceZ1Z2 om0 h0 z1 z2
+    | om0 == 1 = comovingDistanceEdSZ1Z2 h0 z1 z2
+    | om0 < 1 = comovingDistanceZ1Z2Elliptic om0 h0 z1 z2
+    | otherwise = comovingDistanceZ1Z2Integrate om0 h0 z1 z2
+
+e :: Double -> Double -> Double -> Double
+e om0 h0 z = sqrt((1+z)**3 * om0 + ol0)
+    where ol0 = 1-om0
+
+eInv :: Double -> Double -> Double -> Double
+eInv om0 h0 z = 1 / e om0 h0 z
+
+comovingDistanceZ1Z2Integrate :: Double -> Double -> Double -> Double -> Double
+comovingDistanceZ1Z2Integrate om0 h0 z1 z2 = result
+    where (result, err) = integrateQNG 1e-9 (eInv om0 h0) z1 z2
 
 comovingDistanceZ1Z2Elliptic :: Double -> Double -> Double -> Double -> Double
 comovingDistanceZ1Z2Elliptic om0 h0 z1 z2 =
