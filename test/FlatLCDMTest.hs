@@ -1,4 +1,8 @@
-module FlatLCDMTest where
+module FlatLCDMTest 
+( testRunner''
+, testRunnerZ1Z2''
+)
+where
 
 import Test.HUnit.Approx (assertApproxEqual)
 import FlatLCDM
