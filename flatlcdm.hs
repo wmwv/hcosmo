@@ -1,7 +1,12 @@
 module FlatLCDM
 ( age
+, angularDiameterDistance
+, comovingDistance
+, comovingDistanceZ1Z2
 , comovingTransverseDistance
+, distanceModulus
 , lookbacktime
+, luminosityDistance
 ) where
 
 import Numeric.GSL.Special (ellint_RF, Precision(..))
@@ -19,6 +24,20 @@ age om0 h0 z
 
 lookbacktime :: Double -> Double -> Double -> Double
 lookbacktime om0 h0 z = age om0 h0 0 - age om0 h0 z
+
+distanceModulus :: Double -> Double -> Double -> Double
+distanceModulus om0 h0 z = 25 + 5 * (logBase 10 (luminosityDistance om0 h0 z))
+-- Want to write something like this:
+-- distanceModulus = 25 + 5 * (logBase 10) $ luminosityDistance
+
+luminosityDistance :: Double -> Double -> Double -> Double
+luminosityDistance om0 h0 z = (1+z) * comovingTransverseDistance om0 h0 z
+
+angularDiameterDistance :: Double -> Double -> Double -> Double
+angularDiameterDistance om0 h0 z = (comovingTransverseDistance om0 h0 z) / (1+z)
+
+comovingDistance :: Double -> Double -> Double -> Double
+comovingDistance = comovingTransverseDistance
 
 comovingTransverseDistance :: Double -> Double -> Double -> Double
 comovingTransverseDistance om0 h0 z = comovingTransverseDistanceZ1Z2 om0 h0 0 z
