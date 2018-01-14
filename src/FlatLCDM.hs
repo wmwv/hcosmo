@@ -9,29 +9,21 @@ module FlatLCDM
 , luminosityDistance
 ) where
 
+import qualified EdS
 import Numeric.GSL.Special (ellint_RF, Precision(..))
 import Numeric.GSL.Integration
-
-hubbleDistance :: Double -> Double
-hubbleDistance h0 = c/h0  -- Mpc
-    where c = 299792.458  -- km/s
-
-hubbleTime :: Double -> Double
-hubbleTime h0 = (1/h0) * kmPerMpc / secPerGyr
-    where
-        secPerGyr = 1e9 * 365.25 * 24 * 3600
-        kmPerMpc = 3.08567758149137e19
+import Util
 
 age :: Double -> Double -> Double -> Double
 age om0 h0 z
-    | om0 == 1 = hubbleTime h0 * 2/3 * (1+z)**(-3/2)
+    | om0 == 1 = EdS.age h0 z
     | otherwise = hubbleTime h0 * 2/3 / sqrt(1-om0) * asinh(sqrt((1/om0 -1)/(1+z)**3))
 
 lookbacktime :: Double -> Double -> Double -> Double
 lookbacktime om0 h0 z = age om0 h0 0 - age om0 h0 z
 
 distanceModulus :: Double -> Double -> Double -> Double
-distanceModulus om0 h0 z = 25 + 5 * (logBase 10 (luminosityDistance om0 h0 z))
+distanceModulus om0 h0 z = (+ 25.0) . (* 5.0) . logBase 10 $ luminosityDistance om0 h0 z
 -- Want to write something like this:
 -- distanceModulus = 25 + 5 * (logBase 10) $ luminosityDistance
 
@@ -50,13 +42,9 @@ comovingTransverseDistance om0 h0 z = comovingTransverseDistanceZ1Z2 om0 h0 0 z
 comovingTransverseDistanceZ1Z2 :: Double -> Double -> Double -> Double -> Double
 comovingTransverseDistanceZ1Z2 = comovingDistanceZ1Z2
 
-comovingDistanceEdSZ1Z2 :: Double -> Double -> Double -> Double
-comovingDistanceEdSZ1Z2 h0 z1 z2 =
-    2 * hubbleDistance h0 * (1/sqrt(1+z1) - 1/sqrt(1+z2))
-
 comovingDistanceZ1Z2 :: Double -> Double -> Double -> Double -> Double
 comovingDistanceZ1Z2 om0 h0 z1 z2
-    | om0 == 1 = comovingDistanceEdSZ1Z2 h0 z1 z2
+    | om0 == 1 = EdS.comovingDistanceZ1Z2 h0 z1 z2
     | om0 < 1 = comovingDistanceZ1Z2Elliptic om0 h0 z1 z2
     | otherwise = comovingDistanceZ1Z2Integrate om0 h0 z1 z2
 
