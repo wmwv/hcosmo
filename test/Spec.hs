@@ -1,6 +1,9 @@
-import Cosmo.FlatLCDMTest
+import Cosmo.FlatLCDMTest as FlatLCDMTest
+import Cosmo.EdSTest as EdSTest
 
 main :: IO ()
 main = do
-    testRunner
-    testRunnerZ1Z2
+    FlatLCDMTest.testRunner
+    FlatLCDMTest.testRunnerZ1Z2
+    EdSTest.testRunner
+    EdSTest.testRunnerZ1Z2
