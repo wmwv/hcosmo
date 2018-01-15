@@ -1,11 +1,11 @@
-module FlatLCDMTest 
+module Cosmo.FlatLCDMTest
 ( testRunner
 , testRunnerZ1Z2
 )
 where
 
 import Test.HUnit.Approx (assertApproxEqual)
-import FlatLCDM
+import Cosmo.FlatLCDM
 import Text.Printf
 
 testFunction name func om0 h0 z expected tol = do
