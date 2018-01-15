@@ -1,4 +1,4 @@
-module EdS
+module Cosmo.EdS
 ( age
 , angularDiameterDistance
 , comovingDistance
@@ -9,7 +9,7 @@ module EdS
 , luminosityDistance
 ) where
 
-import Util
+import Cosmo.Util
 
 age :: Double -> Double -> Double
 age h0 z = hubbleTime h0 * 2/3 * (1+z)**(-3/2)

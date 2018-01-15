@@ -1,4 +1,4 @@
-module Util (
+module Cosmo.Util (
   hubbleTime
 , hubbleDistance
 ) where

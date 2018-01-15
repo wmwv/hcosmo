@@ -1,11 +1,11 @@
-module EdSTest 
+module EdSTest
 ( testRunner
 , testRunnerZ1Z2
 )
 where
 
 import Test.HUnit.Approx (assertApproxEqual)
-import EdS
+import Cosmo.EdS
 import Text.Printf
 
 testFunction name func h0 z expected tol = do

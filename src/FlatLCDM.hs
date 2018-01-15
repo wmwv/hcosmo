@@ -1,4 +1,4 @@
-module FlatLCDM
+module Cosmo.FlatLCDM
 ( age
 , angularDiameterDistance
 , comovingDistance
@@ -9,10 +9,10 @@ module FlatLCDM
 , luminosityDistance
 ) where
 
-import qualified EdS
+import qualified Cosmo.EdS as EdS
 import Numeric.GSL.Special (ellint_RF, Precision(..))
 import Numeric.GSL.Integration
-import Util
+import Cosmo.Util
 
 age :: Double -> Double -> Double -> Double
 age om0 h0 z
