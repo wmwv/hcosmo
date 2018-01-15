@@ -1,4 +1,4 @@
-module FlatLCDMTest
+module Cosmo.FlatLCDMTest
 ( testRunner
 , testRunnerZ1Z2
 )

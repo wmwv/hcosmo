@@ -1,4 +1,4 @@
-import FlatLCDMTest
+import Cosmo.FlatLCDMTest
 
 main :: IO ()
 main = do

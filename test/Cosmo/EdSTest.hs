@@ -1,4 +1,4 @@
-module EdSTest
+module Cosmo.EdSTest
 ( testRunner
 , testRunnerZ1Z2
 )
