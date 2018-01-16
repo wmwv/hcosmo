@@ -1,5 +1,6 @@
 module Cosmo.FlatLCDM
-( age
+( FlatLCDM(..)
+, age
 , angularDiameterDistance
 , comovingDistance
 , comovingDistanceZ1Z2
