@@ -4,66 +4,61 @@ module Cosmo.FlatLCDM
 , comovingDistance
 , comovingDistanceZ1Z2
 , comovingTransverseDistance
+, comovingTransverseDistanceZ1Z2
 , distanceModulus
 , lookbacktime
 , luminosityDistance
 ) where
 
+import Cosmo.Base( FLRW(..) )
 import qualified Cosmo.EdS as EdS
 import Numeric.GSL.Special (ellint_RF, Precision(..))
 import Numeric.GSL.Integration
 import Cosmo.Util
 
-age :: Double -> Double -> Double -> Double
-age om0 h0 z
-    | om0 == 1 = EdS.age h0 z
-    | otherwise = hubbleTime h0 * 2/3 / sqrt(1-om0) * asinh(sqrt((1/om0 -1)/(1+z)**3))
+data FlatLCDM = FlatLCDM {h0 :: Double, om0 :: Double}
 
-lookbacktime :: Double -> Double -> Double -> Double
-lookbacktime om0 h0 z = age om0 h0 0 - age om0 h0 z
+instance FLRW FlatLCDM where
+    age flatlcdm z
+        | om == 1 = EdS.age flatlcdm z
+        | otherwise = hubbleTime h * 2/3 / sqrt(1-om) * asinh(sqrt((1/om -1)/(1+z)**3))
+        where h = h0 flatlcdm
+              om = om0 flatlcdm
+    lookbacktime flatlcdm z = age flatlcdm 0 - age flatlcdm z
+    distanceModulus flatlcdm z = (+ 25.0) . (* 5.0) . logBase 10 $ luminosityDistance flatlcdm z
+    -- Want to write something like this:
+    -- distanceModulus = 25 + 5 * (logBase 10) $ luminosityDistance
+    luminosityDistance flatlcdm z = (1+z) * comovingTransverseDistance flatlcdm z
+    angularDiameterDistance flatlcdm z = (comovingTransverseDistance flatlcdm z) / (1+z)
+    comovingDistance = comovingTransverseDistance
+    comovingTransverseDistance flatlcdm z = comovingTransverseDistanceZ1Z2 flatlcdm 0 z
+    comovingTransverseDistanceZ1Z2 = comovingDistanceZ1Z2
+    comovingDistanceZ1Z2 flatlcdm z1 z2
+        | om == 1 = EdS.comovingDistanceZ1Z2 flatlcdm z1 z2
+        | om < 1 = comovingDistanceZ1Z2Elliptic flatlcdm z1 z2
+        | otherwise = comovingDistanceZ1Z2Integrate flatlcdm z1 z2
+        where h = h0 flatlcdm
+              om = om0 flatlcdm
 
-distanceModulus :: Double -> Double -> Double -> Double
-distanceModulus om0 h0 z = (+ 25.0) . (* 5.0) . logBase 10 $ luminosityDistance om0 h0 z
--- Want to write something like this:
--- distanceModulus = 25 + 5 * (logBase 10) $ luminosityDistance
+e :: FlatLCDM -> Double -> Double
+e flatlcdm z = sqrt((1+z)**3 * om + ol)
+    where ol = 1-(om0 flatlcdm)
+          om = om0 flatlcdm
 
-luminosityDistance :: Double -> Double -> Double -> Double
-luminosityDistance om0 h0 z = (1+z) * comovingTransverseDistance om0 h0 z
+eInv :: FlatLCDM -> Double -> Double
+eInv flatlcdm z = 1 / e flatlcdm z
 
-angularDiameterDistance :: Double -> Double -> Double -> Double
-angularDiameterDistance om0 h0 z = (comovingTransverseDistance om0 h0 z) / (1+z)
+comovingDistanceZ1Z2Integrate :: FlatLCDM -> Double -> Double -> Double
+comovingDistanceZ1Z2Integrate flatlcdm z1 z2 = result
+    where (result, err) = integrateQNG 1e-9 (eInv flatlcdm) z1 z2
 
-comovingDistance :: Double -> Double -> Double -> Double
-comovingDistance = comovingTransverseDistance
-
-comovingTransverseDistance :: Double -> Double -> Double -> Double
-comovingTransverseDistance om0 h0 z = comovingTransverseDistanceZ1Z2 om0 h0 0 z
-
-comovingTransverseDistanceZ1Z2 :: Double -> Double -> Double -> Double -> Double
-comovingTransverseDistanceZ1Z2 = comovingDistanceZ1Z2
-
-comovingDistanceZ1Z2 :: Double -> Double -> Double -> Double -> Double
-comovingDistanceZ1Z2 om0 h0 z1 z2
-    | om0 == 1 = EdS.comovingDistanceZ1Z2 h0 z1 z2
-    | om0 < 1 = comovingDistanceZ1Z2Elliptic om0 h0 z1 z2
-    | otherwise = comovingDistanceZ1Z2Integrate om0 h0 z1 z2
-
-e :: Double -> Double -> Double -> Double
-e om0 h0 z = sqrt((1+z)**3 * om0 + ol0)
-    where ol0 = 1-om0
-
-eInv :: Double -> Double -> Double -> Double
-eInv om0 h0 z = 1 / e om0 h0 z
-
-comovingDistanceZ1Z2Integrate :: Double -> Double -> Double -> Double -> Double
-comovingDistanceZ1Z2Integrate om0 h0 z1 z2 = result
-    where (result, err) = integrateQNG 1e-9 (eInv om0 h0) z1 z2
-
-comovingDistanceZ1Z2Elliptic :: Double -> Double -> Double -> Double -> Double
-comovingDistanceZ1Z2Elliptic om0 h0 z1 z2 =
+comovingDistanceZ1Z2Elliptic :: FlatLCDM -> Double -> Double -> Double
+comovingDistanceZ1Z2Elliptic flatlcdm z1 z2 =
     prefactor * (tElliptic (s / (1+z1)) - tElliptic (s/(1+z2)))
-    where prefactor = hubbleDistance h0 * (1/sqrt(s*om0))
-          s = ((1-om0)/om0)**(1/3)
+    where prefactor = hubbleDistance h * (1/sqrt(s*om))
+          s = ((1-om)/om)**(1/3)
+          h = h0 flatlcdm
+          om = om0 flatlcdm
 
  -- tElliptic uses elliptic integral of the first kind in Carlson form
  -- to calculate the basic integral for cosmological distances

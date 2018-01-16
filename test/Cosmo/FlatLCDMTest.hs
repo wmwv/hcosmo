@@ -16,8 +16,10 @@ testFunctionZ1Z2 name func om0 h0 z1 z2 expected tol = do
     assertApproxEqual (printf "FlatLCDM %s(Om0: %.2f, H0: %.2f, z1: %.2f, z2: %2.f)" name om0 h0 z1 z2)
         tol expected (func om0 h0 z1 z2)
 
-testRun tol (name, func, om0, h0, z, expected) = testFunction name func om0 h0 z expected tol
-testRunZ1Z2 tol (name, func, om0, h0, z1, z2, expected) = testFunctionZ1Z2 name func om0 h0 z1 z2 expected tol
+testRun tol (name, func, om0, h0, z, expected) = testFunction name func flatlcdm z expected tol
+    where flatlcdm = FlatLCDM{ h0=h0, om0=om0 }
+testRunZ1Z2 tol (name, func, om0, h0, z1, z2, expected) = testFunctionZ1Z2 name func flatlcdm z1 z2 expected tol
+    where flatlcdm = FlatLCDM{ h0=h0, om0=om0 }
 
 testTableFlatLCDM =
     [ ("LookbackTime", lookbacktime, 0.3, 70.0, 0.5, 5.04063793)
