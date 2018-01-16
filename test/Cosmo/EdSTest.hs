@@ -5,19 +5,23 @@ module Cosmo.EdSTest
 where
 
 import Test.HUnit.Approx (assertApproxEqual)
+import Cosmo.Base( FLRW(..) )
+import Cosmo.Base
 import Cosmo.EdS
 import Text.Printf
 
-testFunction name func h0 z expected tol = do
-    assertApproxEqual (printf "EdS %s(H0: %.2f, z: %.2f)" name h0 z)
+testFunction name func eds z expected tol = do
+    assertApproxEqual (printf "EdS %s(H0: %.2f, z: %.2f)" name (h0 eds) z)
         tol expected (func h0 z)
 
-testFunctionZ1Z2 name func h0 z1 z2 expected tol = do
-    assertApproxEqual (printf "EdS %s(H0: %.2f, z1: %.2f, z2: %2.f)" name h0 z1 z2)
-        tol expected (func h0 z1 z2)
+testFunctionZ1Z2 name func eds z1 z2 expected tol = do
+    assertApproxEqual (printf "EdS %s(H0: %.2f, z1: %.2f, z2: %2.f)" name (h0 eds) z1 z2)
+        tol expected (func eds z1 z2)
 
-testRun tol (name, func, h0, z, expected) = testFunction name func h0 z expected tol
-testRunZ1Z2 tol (name, func, h0, z1, z2, expected) = testFunctionZ1Z2 name func h0 z1 z2 expected tol
+testRun tol (name, func, h, z, expected) = testFunction name func eds z expected tol
+    where eds = EdS{h0=h}
+testRunZ1Z2 tol (name, func, h, z1, z2, expected) = testFunctionZ1Z2 name func eds z1 z2 expected tol
+    where eds = EdS{h0=h}
 
 testTableEdS =
     [ ("LookbackTimeEdS", lookbacktime, 70.0, 0.5, 4.24332906)
